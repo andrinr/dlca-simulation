@@ -1,3 +1,3 @@
-data-generation/export/*
+data/export/*
 
-!data-generation/export/.gitkeep 
+!data/export/.gitkeep 
