@@ -126,11 +126,11 @@ def reset():
 print(
     "[Hint] Use WSAD/arrow keys to control gravity. Use left/right mouse buttons to attract/repel. Press R to reset."
 )
-gui = ti.GUI("Taichi MLS-MPM-128", res=512, background_color=0x112F41)
+gui = ti.GUI("Taichi MLS-MPM-128", res=512, background_color=0x000000)
 reset()
 gravity[None] = [0, -1]
 
-for frame in range(20000):
+for frame in range(500):
     if gui.get_event(ti.GUI.PRESS):
         if gui.event.key == 'r':
             reset()
@@ -147,7 +147,7 @@ for frame in range(20000):
     if gui.is_pressed(ti.GUI.DOWN, 's'):
         gravity[None][1] = -1
     mouse = gui.get_cursor_pos()
-    gui.circle((mouse[0], mouse[1]), color=0x336699, radius=15)
+    #gui.circle((mouse[0], mouse[1]), color=0x336699, radius=15)
     attractor_pos[None] = [mouse[0], mouse[1]]
     attractor_strength[None] = 0
     if gui.is_pressed(ti.GUI.LMB):
@@ -162,4 +162,8 @@ for frame in range(20000):
                 palette_indices=material)
 
     # Change to gui.show(f'{frame:06d}.png') to write images to disk
-    gui.show()
+    #gui.show()
+
+    filename = f'export/frame_{frame:05d}.png'   # create filename with suffix png
+    print(f'Frame {frame} is recorded in {filename}')
+    gui.show(filename)  # export and show in GUI
