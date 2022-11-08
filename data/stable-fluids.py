@@ -377,10 +377,10 @@ def main():
         elif visualize_v:
             gui.set_image(velocities_pair.cur.to_numpy() * 0.01 + 0.5)
 
-        filename = f'export/frame_{i:05d}.png'   # create filename with suffix png
-        print(f'Frame {i} is recorded in {filename}')
-        gui.show(filename)  # export and show in GUI
-        #gui.show()
+        #filename = f'export/frame_{i:05d}.png'   # create filename with suffix png
+        #print(f'Frame {i} is recorded in {filename}')
+        #gui.show(filename)  # export and show in GUI
+        gui.show()
 
         i += 1
 
