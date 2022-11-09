@@ -14,6 +14,7 @@ mu_0, lambda_0 = E / (2 * (1 + nu)), E * nu / (
 
 x = ti.Vector.field(2, dtype=float, shape=n_particles)  # position
 v = ti.Vector.field(2, dtype=float, shape=n_particles)  # velocity
+
 C = ti.Matrix.field(2, 2, dtype=float,
                     shape=n_particles)  # affine velocity field
 F = ti.Matrix.field(2, 2, dtype=float,
@@ -26,7 +27,6 @@ grid_m = ti.field(dtype=float, shape=(n_grid, n_grid))  # grid node mass
 gravity = ti.Vector.field(2, dtype=float, shape=())
 attractor_strength = ti.field(dtype=float, shape=())
 attractor_pos = ti.Vector.field(2, dtype=float, shape=())
-
 
 @ti.kernel
 def substep():
@@ -106,7 +106,6 @@ def substep():
         v[p], C[p] = new_v, new_C
         x[p] += dt * v[p]  # advection
 
-
 @ti.kernel
 def reset():
     group_size = n_particles // 3
@@ -130,36 +129,22 @@ gui = ti.GUI("Taichi MLS-MPM-128", res=512, background_color=0x000000)
 reset()
 gravity[None] = [0, -1]
 
+# convert from float r g b to int 0xrrggbb
+def rgb2hex(rgb):
+    return '%02x%02x%02x' % rgb
+
 for frame in range(500):
-    if gui.get_event(ti.GUI.PRESS):
-        if gui.event.key == 'r':
-            reset()
-        elif gui.event.key in [ti.GUI.ESCAPE, ti.GUI.EXIT]:
-            break
-    if gui.event is not None:
-        gravity[None] = [0, 0]  # if had any event
-    if gui.is_pressed(ti.GUI.LEFT, 'a'):
-        gravity[None][0] = -1
-    if gui.is_pressed(ti.GUI.RIGHT, 'd'):
-        gravity[None][0] = 1
-    if gui.is_pressed(ti.GUI.UP, 'w'):
-        gravity[None][1] = 1
-    if gui.is_pressed(ti.GUI.DOWN, 's'):
-        gravity[None][1] = -1
-    mouse = gui.get_cursor_pos()
-    #gui.circle((mouse[0], mouse[1]), color=0x336699, radius=15)
-    attractor_pos[None] = [mouse[0], mouse[1]]
-    attractor_strength[None] = 0
-    if gui.is_pressed(ti.GUI.LMB):
-        attractor_strength[None] = 1
-    if gui.is_pressed(ti.GUI.RMB):
-        attractor_strength[None] = -1
+    
     for s in range(int(2e-3 // dt)):
         substep()
-    gui.circles(x.to_numpy(),
-                radius=5,
-                palette=[0x068587, 0xED553B, 0xEEEEF0],
-                palette_indices=material)
+    
+    #for i in range(n_particles):
+    #    vel = v[i]
+    #    c = rgb2hex((int(255*vel[0]), int(255*vel[1]), 0))
+    #    #print(c)
+    #    gui.circle(x[i], color=0xff0000, radius=1.5)
+
+    gui.circles(x.to_numpy(), radius=5)
 
     # Change to gui.show(f'{frame:06d}.png') to write images to disk
     #gui.show()

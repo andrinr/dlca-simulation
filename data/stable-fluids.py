@@ -323,17 +323,12 @@ def reset():
 
 def main():
     global debug, curl_strength
-    visualize_d = True  #visualize dye (default)
-    visualize_v = False  #visualize velocity
-    visualize_c = False  #visualize curl
-
     paused = False
 
     gui = ti.GUI('Stable Fluid', (res, res))
     md_gen = MouseDataGen()
 
-    i = 0
-    while gui.running:
+    for i in range(300):
         if gui.get_event(ti.GUI.PRESS):
             e = gui.event
             if e.key == ti.GUI.ESCAPE:
@@ -346,18 +341,6 @@ def main():
                     curl_strength = 0
                 else:
                     curl_strength = 7
-            elif e.key == 'v':
-                visualize_v = True
-                visualize_c = False
-                visualize_d = False
-            elif e.key == 'd':
-                visualize_d = True
-                visualize_v = False
-                visualize_c = False
-            elif e.key == 'c':
-                visualize_c = True
-                visualize_d = False
-                visualize_v = False
             elif e.key == 'p':
                 paused = not paused
             elif e.key == 'd':
@@ -366,21 +349,48 @@ def main():
         # Debug divergence:
         # print(max((abs(velocity_divs.to_numpy().reshape(-1)))))
 
-        if not paused:
-            mouse_data = md_gen(gui)
-            step(mouse_data)
-        if visualize_c:
-            vorticity(velocities_pair.cur)
-            gui.set_image(velocity_curls.to_numpy() * 0.03 + 0.5)
-        elif visualize_d:
-            gui.set_image(dyes_pair.cur)
-        elif visualize_v:
-            gui.set_image(velocities_pair.cur.to_numpy() * 0.01 + 0.5)
+        # add constant non mouse generated impusle for first frames
+        impulse_data = np.zeros(8, dtype=np.float32)
 
-        #filename = f'export/frame_{i:05d}.png'   # create filename with suffix png
-        #print(f'Frame {i} is recorded in {filename}')
-        #gui.show(filename)  # export and show in GUI
-        gui.show()
+        # [0:2]: normalized delta direction
+        # [2:4]: current mouse xy
+        # [4:7]: color
+        if i < 20:
+            impulse_data[0] = 0.0 
+            impulse_data[1] = 1.0
+            impulse_data[2] = 128
+            impulse_data[3] = 128
+            impulse_data[4] = 1.0
+            impulse_data[5] = 0.0
+            impulse_data[6] = 0.0
+
+        if not paused:
+            # to use mouse data: 
+            # mouse_data = md_gen(gui)
+            # step(mouse_data)
+            step(impulse_data)
+
+        vorticity(velocities_pair.cur)
+  
+        gui.set_image(velocity_curls.to_numpy() * 0.03 + 0.5)
+
+        filename = f'export/frame_curl_{i:05d}.png'   # create filename with suffix png
+        print(f'Frame {i} is recorded in {filename}')
+        gui.show(filename)  # export and show in GUI
+
+        gui.set_image(dyes_pair.cur)
+
+        filename = f'export/frame_dye_{i:05d}.png'   # create filename with suffix png
+        print(f'Frame {i} is recorded in {filename}')
+        gui.show(filename)  # export and show in GUI
+
+        gui.set_image(velocities_pair.cur.to_numpy() * 0.01 + 0.5)
+
+        filename = f'export/frame_vel_{i:05d}.png'   # create filename with suffix png
+        print(f'Frame {i} is recorded in {filename}')
+        gui.show(filename)  # export and show in GUI
+
+        #gui.show()
 
         i += 1
 
