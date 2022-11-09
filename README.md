@@ -1,5 +1,5 @@
 # dlca simulation
 
-- I think model requires a few steps as input
+To get a nice dataset, run data/mpm128.py
 
 
