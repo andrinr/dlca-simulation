@@ -14,6 +14,11 @@ mu, lam = E / 2 / (1 + nu), E * nu / (1 + nu) / (1 - 2 * nu)  # Lame parameters
 bar_pos = ti.Vector([0.2, 0.2])
 damping = 14.5
 
+gravity = ti.Vector.field(2, float, ())
+attractor_pos = ti.Vector.field(2, float, ())
+attractor_strength = ti.field(float, ())
+
+
 @ti.data_oriented
 class SoftBodyRect:
     def __init__(self):
@@ -50,10 +55,10 @@ class SoftBodyRect:
     @ti.kernel
     def advance(self):
         for i in range(NV):
-            self.acc = -self.pos.grad[i] / (rho * dx**2)
+            acc = -self.pos.grad[i] / (rho * dx**2)
             g = gravity[None] * 0.8 + attractor_strength[None] * (
                 attractor_pos[None] - self.pos[i]).normalized(1e-5)
-            self.vel[i] += dt * (self.acc + g * 40)
+            self.vel[i] += dt * (acc + g * 40)
             self.vel[i] *= ti.exp(-dt * damping)
         for i in range(NV):
             # ball boundary condition:
@@ -63,11 +68,13 @@ class SoftBodyRect:
             #    NoV = vel[i].dot(disp)
             #    if NoV < 0:
             #        vel[i] -= NoV * disp / disp2
-            cond = (self.pos[i].y < bar_pos[0]) & (self.vel[i] < 0)
+            cond = (self.pos[i][1] < bar_pos[0]) & (self.vel[i] < 0)
             # rect boundary condition:
             for j in ti.static(range(self.pos.n)):
                 if cond[j]:
                     self.vel[i][j] = 0
+                    print(bar_pos[0])
+                    print(self.pos[i][1])
             self.pos[i] += dt * self.vel[i]
 
     @ti.kernel
@@ -77,7 +84,7 @@ class SoftBodyRect:
             a, b, c = self.pos[ia], self.pos[ib], self.pos[ic]
             self.V[i] = abs((a - c).cross(b - c))
             D_i = ti.Matrix.cols([a - c, b - c])
-        self.F[i] = D_i @ self.B[i]
+            self.F[i] = D_i @ self.B[i]
 
         for i in range(NF):
             F_i = self.F[i]
@@ -88,7 +95,7 @@ class SoftBodyRect:
             self.phi[i] = phi_i
             self.U[None] += self.V[i] * phi_i
 
-    def paint(self, gui):
+    def paint_phi(self, gui):
         pos_ = self.pos.to_numpy()
         phi_ = self.phi.to_numpy()
         f2v_ = self.f2v.to_numpy()
@@ -97,10 +104,6 @@ class SoftBodyRect:
         gb = (1 - k) * 0.5
         #gui.triangles(a, b, c, color=ti.rgb_to_hex([k + gb, gb, gb]))
         gui.triangles(a, b, c, color=0xff0000)
-
-gravity = ti.Vector.field(2, float, ())
-attractor_pos = ti.Vector.field(2, float, ())
-attractor_strength = ti.field(float, ())
 
 
 def main():
@@ -118,10 +121,14 @@ def main():
     )
     while gui.running:
         for i in range(50):
-            #with ti.ad.Tape(loss=U):
-            mesh1.update_U()
-            mesh2.update_U()
+            with ti.ad.Tape(loss=mesh1.U):
+                mesh1.update_U()
+            
             mesh1.advance()
+            
+            with ti.ad.Tape(loss=mesh2.U):
+                mesh2.update_U()
+
             mesh2.advance()
 
         mesh1.paint_phi(gui)
