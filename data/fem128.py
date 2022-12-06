@@ -46,6 +46,7 @@ class SoftBodyRect:
             k = i * (N + 1) + j
             self.pos[k] = ti.Vector([i, j]) / N * scale + offset
             self.vel[k] = ti.Vector([0, 0])
+
         for i in range(NF):
             ia, ib, ic = self.f2v[i]
             a, b, c = self.pos[ia], self.pos[ib], self.pos[ic]
@@ -73,8 +74,6 @@ class SoftBodyRect:
             for j in ti.static(range(self.pos.n)):
                 if cond[j]:
                     self.vel[i][j] = 0
-                    print(bar_pos[0])
-                    print(self.pos[i][1])
             self.pos[i] += dt * self.vel[i]
 
     @ti.kernel
@@ -111,7 +110,7 @@ def main():
     mesh2 = SoftBodyRect()
 
     mesh1.initialize(0.25, ti.Vector([0.1, 0.6]))
-    mesh2.initialize(0.25, ti.Vector([0.6, 0.6]))
+    mesh2.initialize(0.25, ti.Vector([0.6, 0.3]))
    
     gravity[None] = [0, -1]
 
@@ -119,7 +118,7 @@ def main():
     print(
         "[Hint] Use WSAD/arrow keys to control gravity. Use left/right mouse buttons to attract/repel. Press R to reset."
     )
-    while gui.running:
+    for frame in range(500):
         for i in range(50):
             with ti.ad.Tape(loss=mesh1.U):
                 mesh1.update_U()
@@ -139,8 +138,11 @@ def main():
         #gui.circles(pos.to_numpy(), radius=2, color=0xffaa33)
         gui.triangle([0, bar_pos.y], [1.0, bar_pos.y], [1.0, 0.0], color=0x00ff00)
         gui.triangle([0, bar_pos.y], [0.0, 0.0], [1.0, 0.0], color=0x00ff00)
-        gui.show()
+        #gui.show()
 
+        filename = f'export2/frame_{frame:05d}.png'   # create filename with suffix png
+        print(f'Frame {frame} is recorded in {filename}')
+        gui.show(filename)  # export and show in GUI
 
 if __name__ == '__main__':
     main()
