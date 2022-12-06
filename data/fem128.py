@@ -118,8 +118,8 @@ def main():
     print(
         "[Hint] Use WSAD/arrow keys to control gravity. Use left/right mouse buttons to attract/repel. Press R to reset."
     )
-    for frame in range(500):
-        for i in range(50):
+    for frame in range(100):
+        for i in range(200):
             with ti.ad.Tape(loss=mesh1.U):
                 mesh1.update_U()
             
