@@ -142,13 +142,13 @@ for frame in range(500):
     #    vel = v[i]
     #    c = rgb2hex((int(255*vel[0]), int(255*vel[1]), 0))
     #    #print(c)
-    #    gui.circle(x[i], color=0xff0000, radius=1.5)
+    #    gui.circle(x[i], color=0xff0000, razdius=1.5)
 
     gui.circles(x.to_numpy(), radius=5)
 
     # Change to gui.show(f'{frame:06d}.png') to write images to disk
-    #gui.show()
+    gui.show()
 
-    filename = f'export/frame_{frame:05d}.png'   # create filename with suffix png
-    print(f'Frame {frame} is recorded in {filename}')
-    gui.show(filename)  # export and show in GUI
+    #filename = f'export/frame_{frame:05d}.png'   # create filename with suffix png
+    #print(f'Frame {frame} is recorded in {filename}')
+    #gui.show(filename)  # export and show in GUI

@@ -22,8 +22,8 @@ args, unknowns = parser.parse_known_args()
 
 res = 256
 dt = 0.03
-p_jacobi_iters = 500  # 40 for a quicker but less accurate result
-f_strength = 1000.0
+p_jacobi_iters = 40 # 40 for a quicker but less accurate result
+f_strength = 100.0
 curl_strength = 0
 time_c = 2
 maxfps = 60
@@ -374,19 +374,19 @@ def main():
   
         gui.set_image(velocity_curls.to_numpy() * 0.03 + 0.5)
 
-        filename = f'export/frame_curl_{i:05d}.png'   # create filename with suffix png
+        """filename = f'export2/frame_curl_{i:05d}.png'   # create filename with suffix png
         print(f'Frame {i} is recorded in {filename}')
         gui.show(filename)  # export and show in GUI
 
         gui.set_image(dyes_pair.cur)
 
-        filename = f'export/frame_dye_{i:05d}.png'   # create filename with suffix png
+        filename = f'export2/frame_dye_{i:05d}.png'   # create filename with suffix png
         print(f'Frame {i} is recorded in {filename}')
-        gui.show(filename)  # export and show in GUI
+        gui.show(filename)  # export and show in GUI"""
 
-        gui.set_image(velocities_pair.cur.to_numpy() * 0.01 + 0.5)
+        gui.set_image(_velocities.to_numpy() * 0.01 + 0.5)
 
-        filename = f'export/frame_vel_{i:05d}.png'   # create filename with suffix png
+        filename = f'export2/frame_vel_{i:05d}.png'   # create filename with suffix png
         print(f'Frame {i} is recorded in {filename}')
         gui.show(filename)  # export and show in GUI
 
