@@ -22,12 +22,12 @@ args, unknowns = parser.parse_known_args()
 
 res = 256
 dt = 0.03
-p_jacobi_iters = 40 # 40 for a quicker but less accurate result
-f_strength = 100.0
+p_jacobi_iters = 600 # 40 for a quicker but less accurate result
+f_strength = 40.0
 curl_strength = 0
 time_c = 2
 maxfps = 60
-dye_decay = 1 - 1 / (maxfps * time_c)
+dye_decay = 1# - 1 / (maxfps * time_c)
 force_radius = res / 2.0
 debug = False
 
@@ -360,9 +360,9 @@ def main():
             impulse_data[1] = 1.0
             impulse_data[2] = 128
             impulse_data[3] = 128
-            impulse_data[4] = 1.0
-            impulse_data[5] = 0.0
-            impulse_data[6] = 0.0
+            impulse_data[4] = np.sin((i / 6 + 2/3 ) * np.pi) * 0.5 + 0.5
+            impulse_data[5] = np.sin((i / 6 + 0) * np.pi) * 0.5 + 0.5
+            impulse_data[6] = np.sin((i / 6 + 1/3) * np.pi) * 0.5 + 0.5
 
         if not paused:
             # to use mouse data: 
@@ -374,21 +374,22 @@ def main():
   
         gui.set_image(velocity_curls.to_numpy() * 0.03 + 0.5)
 
-        """filename = f'export2/frame_curl_{i:05d}.png'   # create filename with suffix png
+        """filename = f'export3/frame_curl_{i:05d}.png'   # create filename with suffix png
         print(f'Frame {i} is recorded in {filename}')
         gui.show(filename)  # export and show in GUI
-
+        """
         gui.set_image(dyes_pair.cur)
 
-        filename = f'export2/frame_dye_{i:05d}.png'   # create filename with suffix png
+        filename = f'export3/frame_dye_{i:05d}.png'   # create filename with suffix png
         print(f'Frame {i} is recorded in {filename}')
         gui.show(filename)  # export and show in GUI"""
 
+        """
         gui.set_image(_velocities.to_numpy() * 0.01 + 0.5)
 
-        filename = f'export2/frame_vel_{i:05d}.png'   # create filename with suffix png
+        filename = f'export3/frame_patterns_{i:05d}.png'   # create filename with suffix png
         print(f'Frame {i} is recorded in {filename}')
-        gui.show(filename)  # export and show in GUI
+        gui.show(filename)  # export and show in GUI"""
 
         #gui.show()
 
