@@ -110,7 +110,7 @@ def main():
     mesh2 = SoftBodyRect()
 
     mesh1.initialize(0.25, ti.Vector([0.1, 0.6]))
-    mesh2.initialize(0.25, ti.Vector([0.6, 0.3]))
+    mesh2.initialize(0.2, ti.Vector([0.6, 0.3]))
    
     gravity[None] = [0, -1]
 
