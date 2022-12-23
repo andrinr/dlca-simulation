@@ -15,7 +15,19 @@ All the .ipynb files are also available online via google collab:
 - [mainNCA.ipynb](https://colab.research.google.com/drive/1K2Eogp9hiieuxIuShUuhhVIE9bJ264K2?usp=sharing): Most of the code was written here, it includes fluids, soft bodies and also style transfer experiments.
 - [dlca_with_sim.ipynb](https://colab.research.google.com/drive/1HPg_dMIGGCdZ8mJWoeTOIaRWQmiKeWQ3?usp=sharing): This version branched of from the main as it uses another approach where the simulation code is integrated into the code to accelerate the runtime. This version achieved the best results to predict simulation steps for incompressible fluids.
 
-If you decide to run the machine learning codes locally, make sure to remove all commands starting with an ``!`` and install the requirements. 
+If you decide to run the machine learning codes locally, make sure to remove (comment out) all commands starting with an ``!`` from the notebook and install the required modules:
+
+- tensorflow
+- numpy
+- taichi
+- mediapy
+- matplotlib
+- PIL
+- tqdm
+
+to install ffmpeg use the following command (linux):
+
+```command -v ffmpeg >/dev/null || (apt update && apt install -y ffmpeg)```
 
 The datasets for ``mainNCA.ipynb`` are simulated locally and acessed by the code over the github servers. 
 
