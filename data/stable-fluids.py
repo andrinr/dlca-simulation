@@ -21,9 +21,9 @@ parser.add_argument('-S',
 args, unknowns = parser.parse_known_args()
 
 res = 256
-dt = 0.03
-p_jacobi_iters = 600 # 40 for a quicker but less accurate result
-f_strength = 40.0
+dt = 0.01
+p_jacobi_iters = 200 # 40 for a quicker but less accurate result
+f_strength = 20000
 curl_strength = 0
 time_c = 2
 maxfps = 60
@@ -107,7 +107,6 @@ def lerp(vl, vr, frac):
     # frac: [0.0, 1.0]
     return vl + frac * (vr - vl)
 
-
 @ti.func
 def bilerp(vf, p):
     u, v = p
@@ -158,7 +157,7 @@ def apply_impulse(vf: ti.template(), dyef: ti.template(),
         dc = dyef[i, j]
         a = dc.norm()
 
-        momentum = (mdir * f_strength * factor + g_dir * a / (1 + a)) * dt
+        momentum = (mdir * f_strength * factor) * dt
 
         v = vf[i, j]
         vf[i, j] = v + momentum
@@ -187,7 +186,6 @@ def divergence(vf: ti.template()):
         if j == res - 1:
             vt.y = -vc.y
         velocity_divs[i, j] = (vr.x - vl.x + vt.y - vb.y) * 0.5
-
 
 @ti.kernel
 def vorticity(vf: ti.template()):
@@ -328,7 +326,7 @@ def main():
     gui = ti.GUI('Stable Fluid', (res, res))
     md_gen = MouseDataGen()
 
-    for i in range(300):
+    for i in range(1000):
         if gui.get_event(ti.GUI.PRESS):
             e = gui.event
             if e.key == ti.GUI.ESCAPE:
@@ -366,13 +364,13 @@ def main():
 
         if not paused:
             # to use mouse data: 
-            # mouse_data = md_gen(gui)
-            # step(mouse_data)
-            step(impulse_data)
+            mouse_data = md_gen(gui)
+            step(mouse_data)
+            #step(impulse_data)
 
         vorticity(velocities_pair.cur)
   
-        gui.set_image(velocity_curls.to_numpy() * 0.03 + 0.5)
+        #gui.set_image(velocity_curls.to_numpy() * 0.03 + 0.5)
 
         """filename = f'export3/frame_curl_{i:05d}.png'   # create filename with suffix png
         print(f'Frame {i} is recorded in {filename}')
@@ -380,9 +378,9 @@ def main():
         """
         gui.set_image(dyes_pair.cur)
 
-        filename = f'export3/frame_dye_{i:05d}.png'   # create filename with suffix png
-        print(f'Frame {i} is recorded in {filename}')
-        gui.show(filename)  # export and show in GUI"""
+        #filename = f'export3/frame_dye_{i:05d}.png'   # create filename with suffix png
+        #print(f'Frame {i} is recorded in {filename}')
+        #gui.show(filename)  # export and show in GUI"""
 
         """
         gui.set_image(_velocities.to_numpy() * 0.01 + 0.5)
@@ -391,7 +389,7 @@ def main():
         print(f'Frame {i} is recorded in {filename}')
         gui.show(filename)  # export and show in GUI"""
 
-        #gui.show()
+        gui.show()
 
         i += 1
 
